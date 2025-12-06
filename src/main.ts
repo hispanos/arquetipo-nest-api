@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { WrapResponseInterceptor } from './common/interceptors/wrap-response.interceptor';
 import { initializeErrsole } from './config/errsole.config';
 import errsole from 'errsole';
-import { ClassSerializerInterceptor } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 
@@ -24,6 +24,14 @@ async function bootstrap() {
   app.useGlobalInterceptors(
     new WrapResponseInterceptor(),
     new ClassSerializerInterceptor(app.get('Reflector')),
+  );
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
 
   const config = new DocumentBuilder()
